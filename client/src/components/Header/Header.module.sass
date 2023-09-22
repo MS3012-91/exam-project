@@ -1,8 +1,33 @@
+@mixin flex-center
+  display: flex
+  justify-content: center
+  align-items: center
+
+@mixin flex-start
+  display: flex
+  justify-content: flex-start
+
+$header-borders: 1px solid #ebebeb
+$hover-color: f27e51
+$hover-background-color: #f9fafb
+$intense-blue-color: #28d2d0
+$links-color: #333
+$fixed-header-background-color: rgb(69, 90, 137)
+$fixed-header-background-border: rgb(255, 255, 255)
+$fixed-header-link-color: lightyellow
+$white-color: white
+$phone-number-color: #337ab7
+$login-buttons-color: #718888
+$main-menu-color: #495d8b
+$last-li-corder-color: aquamarine
+
+.loginButtons
+  display: flex
+  flex-direction: row
 
 .headerContainer
-  display: flex
+  @include flex-start
   flex-direction: column
-  justify-content: flex-start
   width: 100%
 
   .navContainer
@@ -11,7 +36,7 @@
     display: flex
     justify-content: space-around
     align-items: center
-    border-bottom: 1px solid #ebebeb
+    border-bottom: $header-borders
     @media(max-width: 920px)
       justify-content: center
     @media(max-width: 700px)
@@ -26,16 +51,16 @@
       text-align: center
       max-width: 340px
       padding: 10px 22px
-      border: 2px solid #28d2d0
-      color: #28d2d0
+      border: 2px solid $intense-blue-color
+      color: $intense-blue-color
       border-radius: 5px
       font-size: 14px
       font-weight: 400
       margin-bottom: 10px
 
       &:hover
-        color: white
-        background-color: #28d2d0
+        color: $white-color
+        background-color: $intense-blue-color
 
     .leftNav
       display: flex
@@ -46,11 +71,9 @@
       .nav
         display: flex
 
-        ul
+        .menuItem
           margin: 0
-          list-style: none
-          display: flex
-          justify-content: flex-start
+          @include flex-start
           align-items: center
           @media(max-width: 920px)
             padding: 0
@@ -63,80 +86,77 @@
               width: 200px
 
           li
-            display: flex
+            @include flex-start
             align-items: center
-            justify-content: flex-start
             margin-right: 30px
+            text-transform: uppercase
             @media(max-width: 700px)
               width: 100%
               padding: 0 15px
 
             &:hover
               span
-                color: #f27e51
+                color: $hover-color
 
-              ul
+              .submenu
                 display: block
                 position: absolute
-                border: 1px solid #eee
+                border: $header-borders
                 z-index: 1000
                 top: 130px
-                background-color: white
+                background-color: $white-color
                 @media(max-width: 700px)
+                  width: 250px
                   top: auto
                   left: 145px
+                  li
+                    padding: 5px 15px
 
-            ul
+            .submenu
               padding: 0
               margin: 0
               width: 160px
               display: none
+              line-height: 1.2
 
               .last
                 width: 100%
                 padding-top: 8px
                 box-sizing: border-box
-                border-top: 1px solid aquamarine
+                border-top: 1px solid $last-li-corder-color
 
               li
-                box-sizing: border-box
-                width: 100%
                 padding: 10px 15px
-                display: flex
-                justify-content: flex-start
 
                 &:hover
-                  background: #f9fafb
+                  background: $hover-background-color
 
                 a
                   font-size: 12px
-                  text-decoration: none
-                  color: #333
+                  color: $links-color
 
                   &:hover
-                    color: #f27e51
+                    color: $hover-color
 
             span
-              color: #495d8b
+              color: $main-menu-color
               font-size: 15px
               font-weight: 300
               padding: 15px 0
 
-  .loginSignnUpHeaders
+  .loginSignUpHeaders
     margin-top: 30px
     display: flex
     flex-direction: row
     align-items: center
     justify-content: space-around
-    border: 1px solid #ebebeb
+    border: $header-borders
     margin-bottom: 13px
 
     .userButtonsContainer
       margin-left: 100px
-      align-items: center
-      justify-content: center
-      display: flex
-      border-left: 1px solid #ebebeb
+      @include flex-center
+      border-left: $header-borders
       height: 40px
       @media(max-width: 600px)
         margin-left: 60px
@@ -147,40 +167,47 @@
 
       .emailIcon
         padding: 0 15px
-        border-right: 1px solid #ebebeb
+        border-right: $header-borders
+        &:hover
+          transform: scale(1.2)
 
       .userInfo
-        display: flex
-        justify-content: center
-        align-items: center
+        height: 100%
+        @include flex-center
         padding: 0 15px
-        border-right: 1px solid #ebebeb
+        border-right: $header-borders
+        position: relative
 
         &:hover
           ul
             display: block
-            position: absolute
-            top: 45px
 
         ul
-          border: 1px solid #eee
+          border: $header-borders
           z-index: 500
           padding: 5px 0
-          list-style: none
-          background: white
+          background: $white-color
           width: 180px
           display: none
+          position: absolute
+          top: 100%
 
           li
             text-align: left
 
             &:hover
-              background: #f9fafb
+              background: $hover-background-color
 
-            span
+            .logout
+              width: 100%
+              text-align: start
+              border: none
+              margin: 0 5px
+
+            span, .logout
               display: inline-block
               padding: 5px 15px
-              color: #333
+              color: $links-color
               font-size: 16px
 
         img
@@ -191,27 +218,26 @@
         span
           padding: 0
           margin-left: 5px
-          color: #718888
+          color: $login-buttons-color
           font-weight: 400
           font-size: 16px
           border: none
 
-      span
+      button
         padding: 0 15px
-        color: #718888
+        color: $login-buttons-color
         font-weight: 400
         font-size: 14px
-        border-right: 1px solid #ebebeb
+        border: none
+        background-color: transparent
+        border-right: $header-borders
 
     .numberContainer
-      text-decoration: none
       color: inherit
-      display: flex
-      justify-content: center
-      align-items: center
+      @include flex-center
       padding: 0 15px
-      border-right: 1px solid #ebebeb
-      border-left: 1px solid #ebebeb
+      border-right: $header-borders
+      border-left: $header-borders
       margin-left: 120px
       height: 40px
       @media(max-width: 600px)
@@ -220,35 +246,33 @@
         padding: 0 5px
         margin-left: 0
 
-      span
-        color: #337ab7
+      a
+        color: $phone-number-color
         font-size: 14px
         margin-left: 10px
         @media(max-width: 360px)
           font-size: 12px
+        &:hover
+          color: $hover-color
 
   .fixedHeader
-    z-index: 500
-    display: flex
-    justify-content: center
-    align-items: center
+    @include flex-center
     width: 100%
     position: fixed
-    background-color: rgb(69, 90, 137)
-    border-bottom: 3px solid rgb(255, 255, 255)
+    background-color: $fixed-header-background-color
+    border-bottom: 3px solid $fixed-header-background-border
     height: 30px
 
     .info
-      font-size: 8pt
+      font-size: 11px
       letter-spacing: 0.3px
-      color: white
+      color: $white-color
       margin-right: 4px
       @media(max-width: 600px)
         display: none
 
     a
-      font-size: 8pt
+      font-size: 11px
       letter-spacing: 0.3px
-      color: lightyellow
+      color: $white-color
       text-decoration: underline
-

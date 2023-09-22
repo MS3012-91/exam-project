@@ -5,6 +5,7 @@ import styles from './Header.module.sass';
 import CONSTANTS from '../../constants';
 import { clearUserStore } from '../../store/slices/userSlice';
 import { getUser } from '../../store/slices/userSlice';
+import { menuItems } from './HeaderRouting';
 
 class Header extends React.Component {
   componentDidMount () {
@@ -24,77 +25,79 @@ class Header extends React.Component {
   };
 
   renderLoginButtons = () => {
-    if (this.props.data) {
+    const { data } = this.props;
+    if (data) {
+      const avatarSrc =
+        data.avatar === 'anon.png'
+          ? CONSTANTS.ANONYM_IMAGE_PATH
+          : `${CONSTANTS.publicURL}${data.avatar}`;
+
+      const userLinks = [
+        { to: '/dashboard', text: 'View Dashboard' },
+        { to: '/account', text: 'My Account' },
+        { to: '#', text: 'Messages' },
+        { to: '#', text: 'Affiliate Dashboard' },
+        { onClick: this.logOut, text: 'Logout' },
+      ];
+
       return (
         <>
           <div className={styles.userInfo}>
-            <img
-              src={
-                this.props.data.avatar === 'anon.png'
-                  ? CONSTANTS.ANONYM_IMAGE_PATH
-                  : `${CONSTANTS.publicURL}${this.props.data.avatar}`
-              }
-              alt='user'
-            />
-            <span>{`Hi, ${this.props.data.displayName}`}</span>
+            <img src={avatarSrc} alt='user' />
+            <span>{`Hi, ${data.displayName}`}</span>
             <img
               src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
               alt='menu'
             />
             <ul>
-              <li>
-                <Link to='/dashboard' style={{ textDecoration: 'none' }}>
-                  <span>View Dashboard</span>
-                </Link>
-              </li>
-              <li>
-                <Link to='/account' style={{ textDecoration: 'none' }}>
-                  <span>My Account</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='#'
-                  style={{ textDecoration: 'none' }}
-                >
-                  <span>Messages</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='#'
-                  style={{ textDecoration: 'none' }}
-                >
-                  <span>Affiliate Dashboard</span>
-                </Link>
-              </li>
-              <li>
-                <span onClick={this.logOut}>Logout</span>
-              </li>
+              {userLinks.map((link, index) => (
+                <li key={index}>
+                  {link.to ? (
+                    <Link to={link.to}>
+                      <span>{link.text}</span>
+                    </Link>
+                  ) : (
+                    <button onClick={link.onClick} className={styles.logout}>
+                      {link.text}{' '}
+                    </button>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
-          <img
-            src={`${CONSTANTS.STATIC_IMAGES_PATH}email.png`}
-            className={styles.emailIcon}
-            alt='email'
-          />
+          <a href='mailto: email@example.com'>
+            <img
+              src={`${CONSTANTS.STATIC_IMAGES_PATH}email.png`}
+              alt='email'
+              className={styles.emailIcon}
+            />
+          </a>
         </>
       );
+    } else {
+      const authLinks = [
+        { to: '/login', text: 'LOGIN' },
+        { to: '/registration', text: 'SIGN UP' },
+      ];
+      return (
+        <ul className={styles.loginButtons}>
+          {authLinks.map((link, index) => (
+            <li key={index}>
+              <Link to={link.to}>
+                <button className={styles.btn}>{link.text}</button>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      );
     }
-    return (
-      <>
-        <Link to='/login' style={{ textDecoration: 'none' }}>
-          <span className={styles.btn}>LOGIN</span>
-        </Link>
-        <Link to='/registration' style={{ textDecoration: 'none' }}>
-          <span className={styles.btn}>SIGN UP</span>
-        </Link>
-      </>
-    );
   };
 
   render () {
-    if (this.props.isFetching) {
+    const { isFetching, data } = this.props;
+    const isBuyer = data && data.role !== CONSTANTS.CREATOR;
+
+    if (isFetching) {
       return null;
     }
     return (
@@ -106,161 +109,51 @@ class Header extends React.Component {
           </span>
           <a href='#'>Read Announcement</a>
         </div>
-        <div className={styles.loginSignnUpHeaders}>
+        <div className={styles.loginSignUpHeaders}>
           <div className={styles.numberContainer}>
             <img src={`${CONSTANTS.STATIC_IMAGES_PATH}phone.png`} alt='phone' />
-            <span>(877)&nbsp;355-3585</span>
+            <a href={`tel:${CONSTANTS.TELEPHONE_SQUADHELP_SERVICE}`}>
+              {CONSTANTS.TELEPHONE_SQUADHELP_SERVICE}
+            </a>
           </div>
           <div className={styles.userButtonsContainer}>
             {this.renderLoginButtons()}
           </div>
         </div>
         <div className={styles.navContainer}>
-          <img
-            src={`${CONSTANTS.STATIC_IMAGES_PATH}blue-logo.png`}
-            className={styles.logo}
-            alt='blue_logo'
-          />
+          <a href='/'>
+            <img
+              src={`${CONSTANTS.STATIC_IMAGES_PATH}blue-logo.png`}
+              className={styles.logo}
+              alt='blue_logo'
+            />
+          </a>
           <div className={styles.leftNav}>
-            <div className={styles.nav}>
-              <ul>
-                <li>
-                  <span>NAME IDEAS</span>
-                  <img
-                    src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
-                    alt='menu'
-                  />
-                  <ul>
-                    <li>
-                      <a href='#'>Beauty</a>
-                    </li>
-                    <li>
-                      <a href='#'>Consulting</a>
-                    </li>
-                    <li>
-                      <a href='#'>E-Commerce</a>
-                    </li>
-                    <li>
-                      <a href='#'>Fashion & Clothing</a>
-                    </li>
-                    <li>
-                      <a href='#'>Finance</a>
-                    </li>
-                    <li>
-                      <a href='#'>Real Estate</a>
-                    </li>
-                    <li>
-                      <a href='#'>Tech</a>
-                    </li>
-                    <li className={styles.last}>
-                      <a href='#'>More Categories</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <span>CONTESTS</span>
-                  <img
-                    src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
-                    alt='menu'
-                  />
-                  <ul>
-                    <li>
-                      <a href='#'>HOW IT WORKS</a>
-                    </li>
-                    <li>
-                      <a href='#'>PRICING</a>
-                    </li>
-                    <li>
-                      <a href='#'>AGENCY SERVICE</a>
-                    </li>
-                    <li>
-                      <a href='#'>ACTIVE CONTESTS</a>
-                    </li>
-                    <li>
-                      <a href='#'>WINNERS</a>
-                    </li>
-                    <li>
-                      <a href='#'>LEADERBOARD</a>
-                    </li>
-                    <li className={styles.last}>
-                      <a href='#'>BECOME A CREATIVE</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <span>Our Work</span>
-                  <img
-                    src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
-                    alt='menu'
-                  />
-                  <ul>
-                    <li>
-                      <a href='#'>NAMES</a>
-                    </li>
-                    <li>
-                      <a href='#'>TAGLINES</a>
-                    </li>
-                    <li>
-                      <a href='#'>LOGOS</a>
-                    </li>
-                    <li className={styles.last}>
-                      <a href='#'>TESTIMONIALS</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <span>Names For Sale</span>
-                  <img
-                    src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
-                    alt='menu'
-                  />
-                  <ul>
-                    <li>
-                      <a href='#'>POPULAR NAMES</a>
-                    </li>
-                    <li>
-                      <a href='#'>SHORT NAMES</a>
-                    </li>
-                    <li>
-                      <a href='#'>INTRIGUING NAMES</a>
-                    </li>
-                    <li>
-                      <a href='#'>NAMES BY CATEGORY</a>
-                    </li>
-                    <li>
-                      <a href='#'>VISUAL NAME SEARCH</a>
-                    </li>
-                    <li className={styles.last}>
-                      <a href='#'>SELL YOUR DOMAINS</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <span>Blog</span>
-                  <img
-                    src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
-                    alt='menu'
-                  />
-                  <ul>
-                    <li>
-                      <a href='#'>ULTIMATE NAMING GUIDE</a>
-                    </li>
-                    <li>
-                      <a href='#'>
-                        POETIC DEVICES IN BUSINESS NAMING
-                      </a>
-                    </li>
-                    <li>
-                      <a href='#'>CROWDED BAR THEORY</a>
-                    </li>
-                    <li className={styles.last}>
-                      <a href='#'>ALL ARTICLES</a>
-                    </li>
-                  </ul>
-                </li>
+            <nav className={styles.nav}>
+              <ul className={styles.menuItem}>
+                {menuItems.map((menuItem, index) => (
+                  <li key={index}>
+                    <span>{menuItem.section}</span>
+                    <img
+                      src={`${CONSTANTS.STATIC_IMAGES_PATH}menu-down.png`}
+                      alt='menu'
+                    />
+                    <ul className={styles.submenu}>
+                      {menuItem.submenu &&
+                        menuItem.submenu.map((subItem, subIndex) => (
+                          <li
+                            key={subIndex}
+                            className={subItem.last ? styles.last : ''}
+                          >
+                            <a href={subItem.href}>{subItem.chapter}</a>
+                          </li>
+                        ))}
+                    </ul>
+                  </li>
+                ))}
               </ul>
-            </div>
-            {this.props.data && this.props.data.role !== CONSTANTS.CREATOR && (
+            </nav>
+            {isBuyer && (
               <div
                 className={styles.startContestBtn}
                 onClick={this.startContests}
