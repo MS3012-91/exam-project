@@ -462,3 +462,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body {
+  width: 100svw;
+  height: 100lvh;
+  box-sizing: border-box;
+}
