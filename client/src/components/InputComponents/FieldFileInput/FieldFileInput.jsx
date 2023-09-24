@@ -1,8 +1,10 @@
 import React from 'react';
-import { Field } from 'formik';
+import { Field, useField } from 'formik';
 
-const FieldFileInput = ({ classes, ...rest }) => {
+const FieldFileInput = ({ classes, formikProps, ...rest }) => {
   const { fileUploadContainer, labelClass, fileNameClass, fileInput } = classes;
+
+  const [field, meta, helpers] = useField(rest);
 
   return (
     <Field name={rest.name}>
@@ -11,7 +13,7 @@ const FieldFileInput = ({ classes, ...rest }) => {
 
         const getFileName = () => {
           if (props.field.value) {
-            return props.field.value.name;
+            return field.value.name;
           }
           return '';
         };
@@ -29,6 +31,18 @@ const FieldFileInput = ({ classes, ...rest }) => {
               className={fileInput}
               id='fileInput'
               type='file'
+              accept='.jpg, .png, .jpeg'
+              value=''
+              onChange={e => {
+                const file = e.target.files[0];
+                const imageType = /image.*/;
+                if (!file.type.match(imageType)) {
+                  e.target.value = '';
+                  console.log('Incorrect file type');
+                } else {
+                  helpers.setValue(e.target.files[0]);
+                }
+              }}
             />
           </div>
         );
