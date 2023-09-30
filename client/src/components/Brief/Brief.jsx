@@ -98,6 +98,7 @@ const Brief = props => {
         contestType={contestData.contestType}
         defaultData={getContestObjInfo()}
         handleSubmit={setNewContestData}
+        isEditContest = {true}
       />
     </div>
   );
