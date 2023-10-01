@@ -13,15 +13,28 @@ import styles from './CustomerDashboard.module.sass';
 import TryAgain from '../TryAgain/TryAgain';
 
 class CustomerDashboard extends React.Component {
-  loadMore = startFrom => {
-    this.props.getContests({
-      limit: 8,
-      offset: startFrom,
-      contestStatus: this.props.customerFilter,
-    });
+  state = {
+    currentPage: 2,
+    limit: 8,
+    contests: [],
   };
 
-  componentDidMount () {
+  loadMore = () => {
+    const { currentPage, limit } = this.state;
+    const { customerFilter } = this.props;
+    this.props
+      .getContests({
+        currentPage,
+        limit,
+        offset: (currentPage - 1) * limit,
+        contestStatus: customerFilter,
+      })
+      .then(() => { this.setState((prevState) => ({
+        currentPage: prevState.currentPage + 1,
+      }));});
+  };
+
+  componentDidMount() {
     this.getContests();
   }
 
@@ -32,32 +45,26 @@ class CustomerDashboard extends React.Component {
     });
   };
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.customerFilter !== prevProps.customerFilter) {
       this.getContests();
     }
   }
 
-  goToExtended = contest_id => {
+  goToExtended = (contest_id) => {
     this.props.history.push(`/contest/${contest_id}`);
   };
 
   setContestList = () => {
-    const array = [];
     const { contests } = this.props;
-    for (let i = 0; i < contests.length; i++) {
-      array.push(
-        <ContestBox
-          data={contests[i]}
-          key={contests[i].id}
-          goToExtended={this.goToExtended}
-        />
-      );
-    }
-    return array;
+    return contests.map((contest) => (
+      <li key={contest.id}>
+        <ContestBox data={contest} goToExtended={this.goToExtended} />
+      </li>
+    ));
   };
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.clearContestsList();
   }
 
@@ -66,7 +73,7 @@ class CustomerDashboard extends React.Component {
     this.getContests();
   };
 
-  render () {
+  render() {
     const { error, haveMore } = this.props;
     const { customerFilter } = this.props;
     return (
@@ -122,7 +129,8 @@ class CustomerDashboard extends React.Component {
               history={this.props.history}
               haveMore={haveMore}
             >
-              {this.setContestList()}
+              {/* {this.setContestList()} */}
+              <ul className={styles.contestList}>{this.setContestList()}</ul>
             </ContestsContainer>
           )}
         </div>
