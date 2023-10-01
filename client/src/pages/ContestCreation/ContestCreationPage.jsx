@@ -15,8 +15,22 @@ const ContestCreationPage = props => {
     ? props.contestCreationStore.contests[props.contestType]
     : { contestType: props.contestType };
 
-  const handleSubmit = values => {
-    props.saveContest({ type: props.contestType, info: values });
+  const handleSubmit = async values => {
+    const updatedValues = { ...values };
+    const files = updatedValues.file;
+    if (files && files.length > 0) {
+      const filesData = {};
+      files.forEach((file, index) => {
+        const fileKey = `file${index + 1}`;
+        filesData[fileKey] = {
+          url: URL.createObjectURL(file),
+          fileName: file.name,
+        };
+        delete updatedValues.file;
+      });
+      updatedValues.filesData = filesData;
+    }
+    props.saveContest({ type: props.contestType, info: updatedValues });
     const route =
       props.bundleStore.bundle[props.contestType] === 'payment'
         ? '/payment'

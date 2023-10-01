@@ -8,17 +8,42 @@ import CONSTANTS from '../../constants';
 import Error from '../../components/Error/Error';
 
 const Payment = props => {
-  const pay = values => {
+  const pay = async (values) => {
     const { contests } = props.contestCreationStore;
     const contestArray = [];
-    Object.keys(contests).forEach(key =>
-      contestArray.push({ ...contests[key] })
-    );
-    const { number, expiry, cvc } = values;
+    const filePromises = [];
+
+    Object.keys(contests).forEach(key => {
+      const contest = contests[key];
+      const filesData = contest.filesData || {};
+
+      const contestFiles = [];
+
+      Object.values(filesData).forEach(fileInfo => {
+          const { url, fileName } = fileInfo;
+        const fetchPromise = fetch(url)
+          .then(response => response.blob())
+          .then(blob => {
+            const file = new File([blob], fileName);
+            contestFiles.push(file);
+            return file;
+          });
+        filePromises.push(fetchPromise);
+      });
+
+      contestArray.push({ ...contest, files: contestFiles });
+    });
+
+    const loadedFiles = await Promise.all(filePromises);
+
+const { number, expiry, cvc } = values;
     const data = new FormData();
     for (let i = 0; i < contestArray.length; i++) {
-      data.append('files', contestArray[i].file);
-      contestArray[i].haveFile = !!contestArray[i].file;
+      const contest = contestArray[i];
+       contest.files.forEach((file) => {
+         data.append('files', file);
+       });
+      contestArray[i].haveFile = !!contest.files.length;
     }
     data.append('number', number);
     data.append('expiry', expiry);
